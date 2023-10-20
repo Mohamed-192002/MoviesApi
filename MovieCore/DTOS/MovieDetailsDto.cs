@@ -1,9 +1,6 @@
-﻿using MoviesApi.Models;
-using System.ComponentModel.DataAnnotations;
-
-namespace MoviesApi.DTOS
+﻿namespace MoviesApi.DTOS
 {
-    public class MovieDetailsDto: BaseMovie
+    public class MovieDetailsDto : BaseMovie
     {
         public int Id { get; set; }
         public string GenreName { get; set; } = default!;

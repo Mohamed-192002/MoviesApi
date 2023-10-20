@@ -1,7 +1,9 @@
 
 using Microsoft.EntityFrameworkCore;
+using Movies;
 using MoviesApi.AutoMapper;
-using MoviesApi.Models;
+using MoviesCore.Services;
+using MoviesEF.Repository;
 using System.Reflection;
 
 namespace MoviesApi
@@ -12,6 +14,7 @@ namespace MoviesApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
             // Add services to the container.
             var connection = builder.Configuration.GetConnectionString("DefalutConnection");
             builder.Services.AddDbContext<ApplicationDbContext>(
@@ -20,6 +23,7 @@ namespace MoviesApi
 
             builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(MapperProfile)));
 
+            builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -37,7 +41,7 @@ namespace MoviesApi
 
             app.UseHttpsRedirection();
 
-            app.UseCors(c=>c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+            app.UseCors(c => c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
             app.UseAuthorization();
 

@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MoviesApi.AutoMapper;
 using MoviesApi.DTOS;
 using MoviesApi.Models;
+using MoviesCore.Services;
 
 namespace MoviesApi.Controllers
 {
@@ -12,48 +10,51 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class GenresController : ControllerBase
     {
-        private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
+        private readonly IBaseRepository<Genre> genreRepository;
 
-        public GenresController(ApplicationDbContext _context,IMapper _mapper)
+        public GenresController(IMapper _mapper, IBaseRepository<Genre> _genreRepository)
         {
-            context = _context;
             mapper = _mapper;
+            genreRepository = _genreRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> ShowAllAsync()
         {
-            var genres=await context.Genres.OrderBy(g=>g.Name).ToListAsync();
-            return Ok(genres); 
+            var genres = await genreRepository.FindAllAsync(null, g => g.Name);
+            return Ok(genres);
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateAsync(GenresDto genresDto)
         {
             var genres = mapper.Map<Genre>(genresDto);
-            await context.Genres.AddAsync(genres);
-            await context.SaveChangesAsync();
+            await genreRepository.AddAsync(genres);
             return Ok(genres);
         }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] int id,[FromBody]GenresDto genresDto)
+        public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] GenresDto genresDto)
         {
-            var genres = context.Genres.FirstOrDefault(g=>g.Id==id);
+            var genres = await genreRepository.FindAsync(g => g.Id == id);
             if (genres == null)
                 return NotFound($"No genre was found with ID : {id}");
+
             genres.Name = genresDto.Name;
-            context.SaveChanges();
+            await genreRepository.UpdateAsync(genres);
 
             return Ok(genres);
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync([FromRoute] int id)
         {
-            var genres = context.Genres.FirstOrDefault(g => g.Id == id);
+            var genres = await genreRepository.FindAsync(g => g.Id == id);
             if (genres == null)
                 return NotFound($"No genre was found with ID : {id}");
-            context.Genres.Remove(genres);
-            context.SaveChanges();
+
+            await genreRepository.DeleteAsync(genres);
 
             return Ok(genres);
         }
