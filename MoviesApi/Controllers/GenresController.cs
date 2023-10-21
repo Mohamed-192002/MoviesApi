@@ -11,18 +11,18 @@ namespace MoviesApi.Controllers
     public class GenresController : ControllerBase
     {
         private readonly IMapper mapper;
-        private readonly IBaseRepository<Genre> genreRepository;
+        private readonly IUnitOfWork unitOfWork;
 
-        public GenresController(IMapper _mapper, IBaseRepository<Genre> _genreRepository)
+        public GenresController(IMapper _mapper, IUnitOfWork _unitOfWork)
         {
             mapper = _mapper;
-            genreRepository = _genreRepository;
+            unitOfWork = _unitOfWork;
         }
 
         [HttpGet]
         public async Task<IActionResult> ShowAllAsync()
         {
-            var genres = await genreRepository.FindAllAsync(null, g => g.Name);
+            var genres = await unitOfWork.Genres.FindAllAsync(null, g => g.Name);
             return Ok(genres);
         }
 
@@ -30,19 +30,19 @@ namespace MoviesApi.Controllers
         public async Task<IActionResult> CreateAsync(GenresDto genresDto)
         {
             var genres = mapper.Map<Genre>(genresDto);
-            await genreRepository.AddAsync(genres);
+            await unitOfWork.Genres.AddAsync(genres);
             return Ok(genres);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] GenresDto genresDto)
         {
-            var genres = await genreRepository.FindAsync(g => g.Id == id);
+            var genres = await unitOfWork.Genres.FindAsync(g => g.Id == id);
             if (genres == null)
                 return NotFound($"No genre was found with ID : {id}");
 
             genres.Name = genresDto.Name;
-            await genreRepository.UpdateAsync(genres);
+            await unitOfWork.Genres.UpdateAsync(genres);
 
             return Ok(genres);
         }
@@ -50,11 +50,11 @@ namespace MoviesApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync([FromRoute] int id)
         {
-            var genres = await genreRepository.FindAsync(g => g.Id == id);
+            var genres = await unitOfWork.Genres.FindAsync(g => g.Id == id);
             if (genres == null)
                 return NotFound($"No genre was found with ID : {id}");
 
-            await genreRepository.DeleteAsync(genres);
+            await unitOfWork.Genres.DeleteAsync(genres);
 
             return Ok(genres);
         }

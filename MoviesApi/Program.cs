@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using Movies;
 using MoviesApi.AutoMapper;
@@ -23,7 +22,7 @@ namespace MoviesApi
 
             builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(MapperProfile)));
 
-            builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+            builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

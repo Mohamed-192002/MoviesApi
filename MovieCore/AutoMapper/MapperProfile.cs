@@ -12,9 +12,10 @@ namespace MoviesApi.AutoMapper
             CreateMap<GenresDto, Genre>();
 
             // Movies
-            //CreateMap<Movie,MoviesDto>()
-            //    .ForMember(src=>src.Poster,opt=>opt.Ignore())
-            //    .ReverseMap();
+            CreateMap<Movie, MovieDetailsDto>();
+            CreateMap<MovieCreateDto, Movie>()
+                .ForMember(src => src.Poster, opt => opt.Ignore());
+            CreateMap<MovieUpdateDto, Movie>();
         }
     }
 }
