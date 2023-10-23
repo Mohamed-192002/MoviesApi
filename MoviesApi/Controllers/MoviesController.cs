@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MoviesApi.DTOS;
 using MoviesApi.Models;
@@ -92,6 +93,7 @@ namespace MoviesApi.Controllers
             var data = mapper.Map<IEnumerable<MovieDetailsDto>>(movies);
             return Ok(data);
         }
+
         [HttpGet("ShowById{id}")]
         public async Task<IActionResult> ShowByIdMovies(int id)
         {

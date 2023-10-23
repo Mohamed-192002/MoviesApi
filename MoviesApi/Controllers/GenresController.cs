@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MoviesApi.DTOS;
 using MoviesApi.Models;
@@ -8,6 +9,7 @@ namespace MoviesApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class GenresController : ControllerBase
     {
         private readonly IMapper mapper;
@@ -18,8 +20,8 @@ namespace MoviesApi.Controllers
             mapper = _mapper;
             unitOfWork = _unitOfWork;
         }
-
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ShowAllAsync()
         {
             var genres = await unitOfWork.Genres.FindAllAsync(null, g => g.Name);

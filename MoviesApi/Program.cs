@@ -1,9 +1,15 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Movies;
 using MoviesApi.AutoMapper;
+using MoviesApi.helper;
+using MoviesCore.Models;
 using MoviesCore.Services;
 using MoviesEF.Repository;
 using System.Reflection;
+using System.Text;
 
 namespace MoviesApi
 {
@@ -12,9 +18,10 @@ namespace MoviesApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-
             // Add services to the container.
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+
             var connection = builder.Configuration.GetConnectionString("DefalutConnection");
             builder.Services.AddDbContext<ApplicationDbContext>(
                 options => options.UseSqlServer(connection)
@@ -23,6 +30,32 @@ namespace MoviesApi
             builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(MapperProfile)));
 
             builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+
+            builder.Services.AddTransient<IAuthService, AuthService>();
+
+            // map setting in jwt to class JWT
+            builder.Services.Configure<JWT>(builder.Configuration.GetSection("jwt"));
+
+            // register a JWT authentication schema with JWT bearer options
+            builder.Services.AddAuthentication(option =>
+            {
+                option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,    
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                    };
+                });
+
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -42,8 +75,9 @@ namespace MoviesApi
 
             app.UseCors(c => c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
-            app.UseAuthorization();
+            app.UseAuthentication();
 
+            app.UseAuthorization();
 
             app.MapControllers();
 
