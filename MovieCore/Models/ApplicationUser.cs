@@ -10,11 +10,11 @@ namespace MoviesCore.Models
 {
     public class ApplicationUser:IdentityUser
     {
-        [Required,MaxLength(50)]
-        public string FiratName { get; set; }
+        [MaxLength(50)]
+        public string FiratName { get; set; } = null!;
 
-        [Required, MaxLength(50)]
-        public string LastName { get; set; }
+        [MaxLength(50)]
+        public string LastName { get; set; } = null!;
 
     }
 }

@@ -7,6 +7,7 @@ using MoviesCore.Services;
 
 namespace MoviesApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MoviesController : ControllerBase
