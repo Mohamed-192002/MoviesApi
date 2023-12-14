@@ -21,13 +21,13 @@ namespace MoviesApi.Controllers
             unitOfWork = _unitOfWork;
         }
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> ShowAllAsync()
         {
             var genres = await unitOfWork.Genres.FindAllAsync(null, g => g.Name);
             return Ok(genres);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateAsync(GenresDto genresDto)
         {
@@ -35,7 +35,7 @@ namespace MoviesApi.Controllers
             await unitOfWork.Genres.AddAsync(genres);
             return Ok(genres);
         }
-
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] GenresDto genresDto)
         {
@@ -49,6 +49,7 @@ namespace MoviesApi.Controllers
             return Ok(genres);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync([FromRoute] int id)
         {

@@ -41,7 +41,7 @@ namespace MoviesEF.Repository
                 foreach (var incluse in includes)
                     query = query.Include(incluse);
 
-            return await query.SingleOrDefaultAsync(criteria);
+            return await query.SingleOrDefaultAsync(criteria);  
         }
 
         public async Task<IEnumerable<T>> FindAllAsync(string[] includes = null, Expression<Func<T, object>> orderBy = null, string orderByDirection = "ASC")

@@ -24,6 +24,7 @@ namespace MoviesApi.Controllers
             unitOfWork = _unitOfWork;
         }
 
+        [Authorize]
         [HttpPost("AddMovie")]
         public async Task<IActionResult> CreateMovie([FromForm] MovieCreateDto moviesDto)
         {
@@ -48,6 +49,7 @@ namespace MoviesApi.Controllers
             return Ok(movie);
         }
 
+        [Authorize]
         [HttpDelete("DeleteMovie{id}")]
         public async Task<IActionResult> DeleteMovie([FromRoute] int id)
         {
@@ -59,6 +61,7 @@ namespace MoviesApi.Controllers
             return Ok(movie);
         }
 
+        [Authorize]
         [HttpPut("EditMovie{id}")]
         public async Task<IActionResult> UpdateMovie([FromRoute] int id, [FromForm] MovieUpdateDto moviesDto)
         {
